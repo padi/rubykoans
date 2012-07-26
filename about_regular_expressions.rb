@@ -55,34 +55,46 @@ class AboutRegularExpressions < EdgeCase::Koan
 
   def test_character_classes_give_options_for_a_character
     animals = ["cat", "bat", "rat", "zat"]
-    assert_equal __, animals.select { |a| a[/[cbr]at/] }
+    assert_equal ["cat", "bat", "rat"], animals.select { |a| a[/[cbr]at/] }
   end
 
   def test_slash_d_is_a_shortcut_for_a_digit_character_class
-    assert_equal __, "the number is 42"[/[0123456789]+/]
-    assert_equal __, "the number is 42"[/\d+/]
+    assert_equal "42", "the number is 42"[/[0123456789]+/]
+    assert_equal "42", "the number is 42"[/\d+/]
   end
 
   def test_character_classes_can_include_ranges
-    assert_equal __, "the number is 42"[/[0-9]+/]
+    assert_equal "42", "the number is 42"[/[0-9]+/]
   end
 
   def test_slash_s_is_a_shortcut_for_a_whitespace_character_class
-    assert_equal __, "space: \t\n"[/\s+/]
+    assert_equal " \t\n", "space: \t\ns"[/\s+/]
+    # surprise! a whitespace character class apparently includes \t and \n
+    # just added a few more examples to prove the point
+    characters = [" ","\t","\n","s"]
+    assert_equal characters - ["s"], characters.select { |character| character[/\s+/] }
   end
 
   def test_slash_w_is_a_shortcut_for_a_word_character_class
     # NOTE:  This is more like how a programmer might define a word.
-    assert_equal __, "variable_1 = 42"[/[a-zA-Z0-9_]+/]
-    assert_equal __, "variable_1 = 42"[/\w+/]
+    assert_equal "variable_1", "variable_1 = 42"[/[a-zA-Z0-9_]+/]
+    assert_equal "variable_1", "variable_1 = 42"[/\w+/]
   end
 
   def test_period_is_a_shortcut_for_any_non_newline_character
-    assert_equal __, "abc\n123"[/a.+/]
+    assert_equal "abc", "abc\n123"[/a.+/]
+    # just to check if the same string 'abc' is returned even if I remove 'a' from the regex
+    assert_equal "abc", "abc\n123"[/.+/]
   end
 
   def test_a_character_class_can_be_negated
-    assert_equal __, "the number is 42"[/[^0-9]+/]
+    assert_equal "the number is ", "the number is 42"[/[^0-9]+/]
+    # Why is that so? How do you actually negate using ^?
+    # Some exercises I did for myself.
+    assert_equal " = ", "variable_1 = 42"[/[^a-zA-Z0-9_]+/] # why?
+    assert_equal " ", "variable_1 = 42"[/[^a-zA-Z0-9_]/] # why?
+    assert_equal " is the number", "42 is the number"[/[^0-9]+/]
+    # let's just skip this for now maybe it will unravel itself later
   end
 
   def test_shortcut_character_classes_are_negated_with_capitals
